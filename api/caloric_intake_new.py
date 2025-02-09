@@ -48,9 +48,10 @@ def get_eat_today(user_id):  # รับ user_id จาก JWT
 
         # คำนวณเป้าหมาย
         cal_goal = user.goal_cal
-        fat_goal = cal_goal * 0.3
-        carb_goal = cal_goal * 0.6
-        protein_goal = cal_goal * 0.1
+        fat_goal = (cal_goal * 0.3) / 9;   # แปลงจาก kcal เป็นกรัม
+        carb_goal = (cal_goal * 0.6) / 4;  # แปลงจาก kcal เป็นกรัม
+        protein_goal = (cal_goal * 0.1) / 4;  # แปลงจาก kcal เป็นกรัม
+
         
         
         if 9 <= user.age <= 12:

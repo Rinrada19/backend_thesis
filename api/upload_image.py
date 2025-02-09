@@ -47,6 +47,8 @@ def create_upload_image_bp():
                     'sodium': food.sodium,
                     'ingredient': food.ingredient,
                     'image': food.image,
+                    'default_meat': food.default_meat,
+                    'food_category': food.food_category
                 })
 
         return jsonify(results)

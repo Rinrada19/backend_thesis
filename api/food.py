@@ -22,6 +22,9 @@ def create_food_bp():
                 'sodium': food.sodium,
                 'ingredient': food.ingredient,
                 'image': food.image,
+                'default_meat': food.default_meat,
+                'food_category': food.food_category
+
             }
             for food in foods
         ]

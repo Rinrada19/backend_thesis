@@ -63,11 +63,14 @@ def create_meal_bp():
             # ดึงวันที่ปัจจุบันใน timezone ของระบบ
             today = datetime.now().date()
 
-            # ค้นหาข้อมูลมื้ออาหารที่ถูกสร้างในวันที่ปัจจุบัน
-            meals_today = Meal.query.filter(func.date(Meal.created_at) == today).all()
+            # ค้นหาข้อมูลมื้ออาหารของผู้ใช้ที่ถูกสร้างในวันที่ปัจจุบัน
+            meals_today = Meal.query.filter(
+                func.date(Meal.created_at) == today,
+                Meal.user_id == user_id  # กรองข้อมูลตาม user_id
+            ).all()
 
             if not meals_today:
-                return jsonify({"message": "No meals found for today!"}), 404
+                return jsonify({"meals": []}), 200
 
             # จัดเตรียมผลลัพธ์
             result = []
@@ -96,19 +99,17 @@ def create_meal_bp():
 
         except Exception as e:
             return jsonify({"message": "An error occurred", "error": str(e)}), 500
+
     
     
     
     @meal_bp.route('/meals/by_date', methods=['GET'])  # ใช้ GET method
-
     @token_required
     def get_meals_by_date(user_id):
         try:
-            # รับข้อมูลจาก body ในรูปแบบ JSON
-            request_data = request.get_json()
+            # ดึงค่าของ date จาก query parameter
+            date_str = request.args.get('date')
 
-            # ตรวจสอบว่าได้ค่าของ date หรือไม่
-            date_str = request_data.get('date')
             if not date_str:
                 return jsonify({"message": "Date is required!"}), 400
 

@@ -9,8 +9,10 @@ def create_app():
     # ตั้งค่าต่าง ๆ
     app.config.from_object(Config)
 
-    CORS(app, origins="http://localhost:3000", supports_credentials=True)
-
+    # CORS(app, origins="http://localhost:3000", supports_credentials=True)
+    #CORS(app, origins=["http://localhost:3000", "http://localhost:3002", "http://localhost:3003"], supports_credentials=True)
+    CORS(app, origins="*", supports_credentials=True)
+    #CORS(app, origins=["http://localhost:3000", "http://localhost:3002", "http://localhost:3003", "*"], supports_credentials=True)
 
     # เรียกใช้ db.init_app เพื่อเชื่อมต่อกับ Flask app
     db.init_app(app)
@@ -33,7 +35,7 @@ def create_app():
         app.register_blueprint(caloric_intake_bp)
         
         from api.caloric_intake_new import eat_today_bp 
-        app.register_blueprint(eat_today_bp )
+        app.register_blueprint(eat_today_bp)
 
         from api.water import water_intake_bp
         app.register_blueprint(water_intake_bp)
@@ -50,7 +52,6 @@ def create_app():
         from api.saved_meal import saved_meal_bp
         app.register_blueprint(saved_meal_bp)
     
-
         from api.friend_info import friendinfo_bp  
         app.register_blueprint(friendinfo_bp)
         # สร้างตารางในฐานข้อมูล (ควรใช้ในระหว่างการพัฒนา หรือเมื่อจำเป็น)
@@ -62,4 +63,5 @@ def create_app():
 app = create_app()
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # รันเซิร์ฟเวอร์ให้สามารถเข้าถึงได้จากทุก IP (0.0.0.0) และกำหนดพอร์ตเป็น 5000
+    app.run(host="0.0.0.0", port=5000, debug=True)

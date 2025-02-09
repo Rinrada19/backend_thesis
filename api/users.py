@@ -203,5 +203,43 @@ def create_users_bp():
             "user_id": new_user.user_id
         }), 201
 
+    @users_bp.route('/check-username', methods=['POST'])
+    def check_username():
+        try:
+            data = request.get_json()
+            username = data.get('username')
+
+            if not username:
+                return jsonify({"message": "กรุณาส่ง username"}), 400
+
+            user = User.query.filter_by(username=username).first()
+            if user:
+                return jsonify({"available": False, "message": "ชื่อผู้ใช้นี้ถูกใช้ไปแล้ว"}), 409
+
+            return jsonify({"available": True, "message": "สามารถใช้ได้"}), 200
+
+        except Exception as e:
+            return jsonify({"message": "เกิดข้อผิดพลาด", "error": str(e)}), 500
+
+    @users_bp.route('/check-email', methods=['POST'])
+    def check_email():
+        try:
+            data = request.get_json()
+            email = data.get('email')
+
+            if not email:
+                return jsonify({"message": "กรุณาส่ง email"}), 400
+
+            user = User.query.filter_by(email=email).first()
+            if user:
+                return jsonify({"available": False, "message": "อีเมลนี้ถูกใช้ไปแล้ว"}), 409
+
+            return jsonify({"available": True, "message": "สามารถใช้ได้"}), 200
+
+        except Exception as e:
+            return jsonify({"message": "เกิดข้อผิดพลาด", "error": str(e)}), 500
+
+
+
 
     return users_bp
