@@ -17,7 +17,7 @@ class Food(db.Model):
     ingredient = db.Column(ARRAY(db.String), nullable=False)  # นำเข้า ARRAY ถูกต้อง
     image = db.Column(db.String, nullable=True)
     default_meat = db.Column(db.String, nullable=False, default='none')
-    meat_id = db.Column(db.Integer, ForeignKey('meat_type.meat_id'), nullable=True)
+   # meat_id = db.Column(db.Integer, ForeignKey('meat_type.meat_id'), nullable=True)
     food_category = db.Column(db.String, nullable=True)
     
     __table_args__ = (
