@@ -31,6 +31,9 @@ def get_meals(friend_id):
 
     # คืนค่าข้อมูล meals ที่พบ
     return meals
+
+
+
 @friendinfo_bp.route('/friend_info', methods=['GET'])
 @token_required
 def get_friend_info(user_id):
@@ -52,13 +55,18 @@ def get_friend_info(user_id):
                 friend_ids.add(friend.user_id)
 
         friend_data = []
+        today = datetime.today().strftime('%Y-%m-%d')  # วันที่ปัจจุบันในรูปแบบ YYYY-MM-DD
+        
         for friend_id in friend_ids:
             # ดึงข้อมูลของเพื่อนจากตาราง User
             friend_instance = User.query.get(friend_id)
 
             if friend_instance:
-                # ดึงข้อมูล meals สำหรับเพื่อนจากฐานข้อมูล
-                meals = db.session.query(Meal).filter(Meal.user_id == friend_id).all()
+                # ดึงข้อมูล meals สำหรับเพื่อนจากฐานข้อมูล โดยกรองเฉพาะมื้ออาหารในวันนี้
+                meals = db.session.query(Meal).filter(
+                    Meal.user_id == friend_id,
+                    db.func.date(Meal.created_at) == today  # ใช้ db.func.date เพื่อเปลี่ยนเป็นวันที่
+                ).all()
 
                 # คำนวณ total_cal โดยการรวมค่า cal จาก meals
                 total_cal = sum(meal.cal for meal in meals)
@@ -66,8 +74,8 @@ def get_friend_info(user_id):
                 # สร้างข้อมูลที่จะแสดงผล
                 friend_meal_data = {
                     "friend_id": friend_id,
-                    "friend_username": friend_instance.username,  # ใช้ข้อมูลจาก friend_instance
-                    "goal_cal": friend_instance.goal_cal,  # ให้ใช้ cal_goal ตามที่เรากำหนดในโมเดล
+                    "friend_username": friend_instance.username,
+                    "goal_cal": friend_instance.goal_cal,
                     "total_cal": total_cal
                 }
                 friend_data.append(friend_meal_data)

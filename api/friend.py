@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from db import db
 from models.friend import Friend
+from models.user import User
 from services.auth_service import token_required
 
 friend_bp = Blueprint('friend', __name__)  # ไม่มี url_prefix
@@ -26,10 +27,18 @@ from datetime import datetime
 @token_required
 def create_friend(user_id):
     data = request.json
-    friend_id = data.get('friend_id')
+    friend_username = data.get('friend_username')
 
-    if not friend_id:
-        return jsonify({"error": "friend_id is required"}), 400
+    if not friend_username:
+        return jsonify({"error": "friend_username is required"}), 400
+
+    # ค้นหาข้อมูลเพื่อนจาก username
+    friend_instance = User.query.filter_by(username=friend_username).first()
+
+    if not friend_instance:
+        return jsonify({"error": "Friend not found"}), 404
+
+    friend_id = friend_instance.user_id  # ดึง friend_id จาก username
 
     # ตรวจสอบก่อนว่ามีข้อมูลเพื่อนนี้อยู่แล้วหรือไม่
     existing_friend1 = Friend.query.filter(

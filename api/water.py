@@ -99,33 +99,50 @@ def add_water_intake(user_id):
 def update_water_intake(user_id):
     try:
         data = request.json
+        water_intake_id = data.get('water_intake_id')
         water_amount = data.get('water_amount')
 
-        if water_amount is None:
-            return jsonify({"message": "Missing water_amount"}), 400
+        if not water_intake_id or water_amount is None:
+            return jsonify({"message": "Missing water_intake_id or water_amount"}), 400
 
-        # หาวันปัจจุบัน (หรือใช้ค่าที่ส่งมา)
-        today = datetime.datetime.now().date()
+        # หาข้อมูลของ water_intake ตาม water_intake_id ที่ส่งมา
         existing_record = WaterIntake.query.filter(
-            db.func.date(WaterIntake.created_at) == today,
-            WaterIntake.user_id == user_id
+            WaterIntake.user_id == user_id,
+            WaterIntake.water_intake_id == water_intake_id
         ).first()
 
         if existing_record:
-            # ถ้ามีข้อมูลแล้ว → อัปเดต
+            # ถ้ามีข้อมูลอยู่แล้ว → อัปเดต
             existing_record.water_amount = water_amount
             db.session.commit()
-            return jsonify({"message": "Water intake updated", "data": existing_record.to_dict()}), 200
+            return jsonify({
+                "message": "Water intake updated",
+                "data": {
+                    "water_intake_id": existing_record.water_intake_id,
+                    "user_id": existing_record.user_id,
+                    "water_amount": existing_record.water_amount,
+                    "created_at": existing_record.created_at
+                }
+            }), 200
         else:
             # ถ้ายังไม่มีข้อมูล → สร้างใหม่
             new_record = WaterIntake(
                 user_id=user_id,
+                water_intake_id=water_intake_id,  # ใช้ water_intake_id ที่ส่งมา
                 water_amount=water_amount,
                 created_at=datetime.datetime.now()
             )
             db.session.add(new_record)
             db.session.commit()
-            return jsonify({"message": "Water intake created", "data": new_record.to_dict()}), 201
+            return jsonify({
+                "message": "Water intake created",
+                "data": {
+                    "water_intake_id": new_record.water_intake_id,
+                    "user_id": new_record.user_id,
+                    "water_amount": new_record.water_amount,
+                    "created_at": new_record.created_at
+                }
+            }), 201
 
     except Exception as e:
         print("Error updating water intake:", str(e))
