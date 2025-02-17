@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from sqlalchemy import func
-from datetime import datetime
+from datetime import datetime, timedelta
 from services.auth_service import token_required
 from app import db
 from models.meal import Meal
@@ -92,6 +92,84 @@ def get_eat_today(user_id):  # รับ user_id จาก JWT
             "protein_goal": protein_goal,
             "sugar_goal": sugar_goal,
             "sodium_goal": sodium_goal
+        }
+
+        return jsonify(result), 200
+
+    except Exception as e:
+        return jsonify({"message": "An error occurred", "error": str(e)}), 500
+
+
+
+
+
+@eat_today_bp.route('/eat_week', methods=['GET'])
+@token_required
+def get_eat_week(user_id):
+    try:
+        today = datetime.today()
+
+        # หาวันแรกของสัปดาห์ (วันจันทร์)
+        start_of_week = today - timedelta(days=(today.weekday() + 1) % 7)  # วันอาทิตย์
+        end_of_week = start_of_week + timedelta(days=6)  # วันเสาร์
+
+
+        # แปลงเป็น string format YYYY-MM-DD
+        start_date_str = start_of_week.strftime('%Y-%m-%d')
+        end_date_str = end_of_week.strftime('%Y-%m-%d')
+
+        # ดึงเป้าหมายแคลอรี่ของผู้ใช้
+        user = User.query.filter_by(user_id=user_id).first()
+        cal_goal = user.goal_cal if user else 0
+
+        # ดึงข้อมูล Meal ภายในช่วงสัปดาห์
+        meals = Meal.query.filter(
+            Meal.user_id == user_id,
+            func.date(Meal.created_at) >= start_of_week,
+            func.date(Meal.created_at) <= end_of_week
+        ).all()
+
+  
+    
+
+        # สร้าง dictionary จัดข้อมูลตามวันที่
+        daily_calories = {}
+
+        meals = Meal.query.filter(
+                    Meal.user_id == user_id,
+                    func.date(Meal.created_at) >= start_date_str,
+                    func.date(Meal.created_at) <= end_date_str
+                ).all()
+        daily_calories = {}
+
+        for meal in meals:
+            date_str = meal.created_at.strftime('%Y-%m-%d')  # แปลงเป็น string (YYYY-MM-DD)
+            daily_calories[date_str] = daily_calories.get(date_str, 0) + meal.cal  # รวมค่าแคลอรี่
+
+        total_cal = sum(daily_calories.values())
+
+        avg_cal_per_day = total_cal / 7  # แก้ให้เฉลี่ยจากวันที่มีข้อมูล
+
+        # แสดงผลลัพธ์
+        print("Calories by Date:", daily_calories)
+        
+        # แสดงผลลัพธ์ที่รวมแคลอรี่ของแต่ละวัน
+       
+        print("Mealtime Data:", meals)
+        print(f"User ID: {user_id}, Start Date: {start_date_str}, End Date: {end_date_str}")
+
+
+        # แปลงเป็น list
+        details = [{"date": date, "calories": cal} for date, cal in daily_calories.items()]
+
+        result = {
+            "user_id": user_id,
+            "start_date": start_date_str,
+            "end_date": end_date_str,
+            "cal_goal": cal_goal,  
+            "total_cal": total_cal,
+            "avg_cal_per_day": avg_cal_per_day,
+            "details": details
         }
 
         return jsonify(result), 200
