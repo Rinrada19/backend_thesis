@@ -46,7 +46,7 @@ def create_upload_image_bp():
                     'sugar': food.suger,  # แก้ไขคำสะกดจาก 'suger' เป็น 'sugar'
                     'sodium': food.sodium,
                     'ingredient': food.ingredient,
-                    'image': food.image,
+                    # 'image': food.image,
                     'default_meat': food.default_meat,
                     'food_category': food.food_category
                 })
