@@ -15,7 +15,7 @@ class Food(db.Model):
     suger = db.Column(db.Float, nullable=False)  # แก้ชื่อจาก suger เป็น sugar
     sodium = db.Column(db.Float, nullable=False)
     ingredient = db.Column(ARRAY(db.String), nullable=False)  # นำเข้า ARRAY ถูกต้อง
-    image = db.Column(db.String, nullable=True)
+  #  image = db.Column(db.String, nullable=True)
     default_meat = db.Column(db.String, nullable=False, default='none')
    # meat_id = db.Column(db.Integer, ForeignKey('meat_type.meat_id'), nullable=True)
     food_category = db.Column(db.String, nullable=True)

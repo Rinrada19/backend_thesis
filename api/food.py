@@ -21,7 +21,7 @@ def create_food_bp():
                 'sugar': food.suger,  # เปลี่ยนชื่อฟิลด์เป็น sugar
                 'sodium': food.sodium,
                 'ingredient': food.ingredient,
-                'image': food.image,
+                #'image': food.image,
                 'default_meat': food.default_meat,
                 'food_category': food.food_category
 
@@ -48,7 +48,7 @@ def create_food_bp():
                 'sugar': food.suger,  # เปลี่ยนชื่อฟิลด์เป็น sugar
                 'sodium': food.sodium,
                 'ingredient': food.ingredient,
-                'image': food.image,
+               # 'image': food.image,
             }), 200
         except Exception as e:
             return jsonify({"error": str(e)}), 400

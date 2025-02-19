@@ -8,7 +8,7 @@ class User(db.Model):
 
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
+   # email = db.Column(db.String(120), unique=True, nullable=False)
     gender = db.Column(db.String(20), nullable=True)
     age = db.Column(db.Integer, nullable=True)
     height = db.Column(db.Float, nullable=True)
@@ -28,3 +28,4 @@ class User(db.Model):
 
     def __repr__(self):
         return f'<User {self.username}>'
+

@@ -27,7 +27,7 @@ def create_menu_item(user_id):
             sugar=data.get('sugar'),
             sodium=data.get('sodium'),
             ingredients=ingredients,  # ส่ง array ที่แยกแล้ว
-            image=data.get('image'),
+        #    image=data.get('image'),
             user_id=user_id  # เพิ่ม user_id ที่ได้จาก token
         )
         db.session.add(new_item)
@@ -55,7 +55,7 @@ def get_all_menu_items(user_id):
             "sugar": item.sugar,
             "sodium": item.sodium,
             "ingredients": item.ingredients,
-            "image": item.image,
+          #  "image": item.image,
             "user_id": item.user_id
         } for item in items]), 200
     except Exception as e:
@@ -83,7 +83,7 @@ def get_menu_item(user_id, item_id):  # รับ user_id ก่อน item_id
             "sugar": item.sugar,
             "sodium": item.sodium,
             "ingredients": item.ingredients,
-            "image": item.image,
+       #     "image": item.image,
             "user_id": item.user_id
         }), 200
     except Exception as e:

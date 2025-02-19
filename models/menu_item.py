@@ -16,7 +16,7 @@ class MenuItem(db.Model):
     sugar = db.Column(db.Numeric, nullable=True)  # น้ำตาล
     sodium = db.Column(db.Numeric, nullable=True)  # โซเดียม
     ingredients = db.Column(db.String, nullable=True)  # เก็บเป็น string แทน array
-    image = db.Column(db.String(255), nullable=True)  # URL รูปภาพ
+   # image = db.Column(db.String(255), nullable=True)  # URL รูปภาพ
     created_at = db.Column(db.DateTime(timezone=True), server_default=db.func.now())  # วันที่สร้าง
     updated_at = db.Column(db.DateTime(timezone=True), server_default=db.func.now())   # วันที่อัปเดตล่าสุด
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)  # แก้ไขตรงนี้
