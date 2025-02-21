@@ -63,4 +63,5 @@ def create_app():
 app = create_app()
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000, debug=True, ssl_context=('path_to_cert.crt', 'path_to_key.key'))
+    # รันเซิร์ฟเวอร์ให้สามารถเข้าถึงได้จากทุก IP (0.0.0.0) และกำหนดพอร์ตเป็น 5000
+    app.run(host="0.0.0.0", port=5000, debug=True)
