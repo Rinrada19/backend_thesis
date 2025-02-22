@@ -9,10 +9,9 @@ def create_app():
     # ตั้งค่าต่าง ๆ
     app.config.from_object(Config)
 
-    # CORS(app, origins="http://localhost:3000", supports_credentials=True)
-    #CORS(app, origins=["http://localhost:3000", "http://localhost:3002", "http://localhost:3003"], supports_credentials=True)
-    CORS(app, origins="*", supports_credentials=True)
-    #CORS(app, origins=["http://localhost:3000", "http://localhost:3002", "http://localhost:3003", "*"], supports_credentials=True)
+   # CORS(app, origins="*", supports_credentials=True)
+ 
+    CORS(app, origins=["https://kakaloly.vercel.app/", "http://localhost:3000"], supports_credentials=True)
 
     # เรียกใช้ db.init_app เพื่อเชื่อมต่อกับ Flask app
     db.init_app(app)
