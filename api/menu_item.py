@@ -14,21 +14,22 @@ def create_menu_item(user_id):
     data = request.json
     try:
         # แปลง ingredients ที่เป็น string เป็น array ของ PostgreSQL
-        ingredients = data.get('ingredients', "").split(',')  # ใช้ .split(',') เพื่อแยก string เป็น array
+        ingredients = data.get('ingredients', [])
 
         new_item = MenuItem(
-            item_name=data.get('item_name'),
-            item_description=data.get('item_description'),
+            food_name=data.get('food_name'),
+            food_description=data.get('food_description'),
             food_category=data.get('food_category'),
-            calories=data.get('calories'),
+            cal=data.get('cal'),
             fat=data.get('fat'),
-            carbs=data.get('carbs'),
+            carb=data.get('carb'),
             protein=data.get('protein'),
             sugar=data.get('sugar'),
             sodium=data.get('sodium'),
-            ingredients=ingredients,  # ส่ง array ที่แยกแล้ว
-        #    image=data.get('image'),
-            user_id=user_id  # เพิ่ม user_id ที่ได้จาก token
+            ingredient=data.get('ingredient'),
+            default_meat=data.get('default_meat'),
+            user_id=user_id,
+            
         )
         db.session.add(new_item)
         db.session.commit()
@@ -42,24 +43,28 @@ def create_menu_item(user_id):
 @token_required
 def get_all_menu_items(user_id):
     try:
-        items = MenuItem.query.filter_by(user_id=user_id).all()  # กรองโดย user_id
+        items = MenuItem.query.filter_by(user_id=user_id).all()  # กรองเฉพาะเมนูของ user นี้
         return jsonify([{
             "item_id": item.item_id,
-            "item_name": item.item_name,
-            "item_description": item.item_description,
+            "food_name": item.food_name,
+            "food_description": item.food_description,
             "food_category": item.food_category,
-            "calories": item.calories,
+            "cal": item.cal,
             "fat": item.fat,
-            "carbs": item.carbs,
+            "carb": item.carb,
             "protein": item.protein,
             "sugar": item.sugar,
             "sodium": item.sodium,
-            "ingredients": item.ingredients,
-          #  "image": item.image,
-            "user_id": item.user_id
+
+            "ingredient": item.ingredient, 
+            "default_meat": item.default_meat,
+            "user_id": item.user_id,
+            "created_at": item.created_at,
+            "updated_at": item.updated_at
         } for item in items]), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+
 
 # อ่านข้อมูลเมนูโดย ID
 # อ่านข้อมูลเมนูโดย ID
@@ -110,7 +115,8 @@ def get_menu_item(user_id, item_id):  # รับ user_id ก่อน item_id
 #         item.protein = data.get('protein', item.protein)
 #         item.sugar = data.get('sugar', item.sugar)
 #         item.sodium = data.get('sodium', item.sodium)
-#         item.ingredients = data.get('ingredients', item.ingredients)
+#        item.ingredients = data.get('ingredients', item.ingredients) or []
+
 #         item.image = data.get('image', item.image)
 
 #         db.session.commit()
