@@ -50,7 +50,36 @@ def create_users_bp():
         except Exception as e:
             return jsonify({"message": "Error retrieving users", "error": str(e)}), 500
 
+    @users_bp.route('/update_weight', methods=['PUT'])  # เพิ่มเส้นทางสำหรับการอัพเดตน้ำหนัก
+    @token_required
+    def update_weight(user_id):  # รับ user_id ที่ถูกส่งจาก token_required
+        print("Update weight route hit!") 
+        try:
+            # รับค่าใหม่ของน้ำหนักจาก request body
+            new_weight = request.json.get('weight')
 
+            if not new_weight:
+                return jsonify({"message": "Weight is required!"}), 400  # ถ้าไม่ได้ส่งน้ำหนักมาจะคืนข้อผิดพลาด
+
+            # ค้นหาผู้ใช้ตาม user_id
+            user = User.query.filter_by(user_id=user_id).first()
+
+            if not user:
+                return jsonify({"message": "User not found"}), 404  # ถ้าไม่พบผู้ใช้
+
+            # อัพเดตน้ำหนัก
+            user.weight = new_weight
+            db.session.commit()  # บันทึกการเปลี่ยนแปลงในฐานข้อมูล
+
+            return jsonify({
+                "message": "Weight updated successfully",
+                "user_id": user.user_id,
+                "new_weight": user.weight
+            }), 200  # ส่งกลับข้อมูลผู้ใช้ที่อัพเดตแล้ว
+
+        except Exception as e:
+            return jsonify({"message": "Error updating weight", "error": str(e)}), 500
+        
     # สร้าง endpoint สำหรับ login
     @users_bp.route('/login', methods=['POST'],endpoint='login')
     def login():

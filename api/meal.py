@@ -119,8 +119,11 @@ def create_meal_bp():
             except ValueError:
                 return jsonify({"message": "Invalid date format. Use YYYY-MM-DD."}), 400
 
-            # ค้นหาข้อมูลมื้ออาหารที่ถูกสร้างในวันที่ที่ระบุ
-            meals_on_date = Meal.query.filter(func.date(Meal.created_at) == target_date).all()
+            # ค้นหาข้อมูลมื้ออาหารที่ถูกสร้างในวันที่ที่ระบุ และเป็นของ user_id ที่กำหนด
+            meals_on_date = Meal.query.filter(
+                func.date(Meal.created_at) == target_date,
+                Meal.user_id == user_id  # กรองโดยใช้ user_id
+            ).all()
 
             if not meals_on_date:
                 return jsonify({"message": f"No meals found for {target_date}!"}), 404
