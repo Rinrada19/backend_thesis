@@ -1,5 +1,5 @@
 from flask import Blueprint, app, jsonify, request
-from werkzeug.security import check_password_hash
+
 import jwt
 import datetime
 from flask_login import login_required, current_user, login_user
@@ -30,7 +30,7 @@ def create_users_bp():
                     'user_id': user.user_id,
                     'username': user.username,
                     'password': user.password,
-                #    'email': user.email,
+                    'email': user.email,
                     'gender': user.gender,
                     'age': user.age,
                     'height': user.height,
@@ -105,7 +105,7 @@ def create_users_bp():
             "message": "Login successful",
             "user_id": user.user_id,
             "username": user.username,
-        #    "email": user.email,
+            "email": user.email,
             "gender": user.gender,
             "age": user.age,
             "height": user.height,
@@ -123,6 +123,14 @@ def create_users_bp():
             # ถ้าผู้ใช้หรือรหัสผ่านผิด คืนค่าข้อความผิดพลาด
             return jsonify({"message": "Invalid username or password"}), 401
         
+    
+    
+    def check_user_login(username, password):
+        user = User.query.filter_by(username=username).first()  # ค้นหาผู้ใช้ในฐานข้อมูลจากชื่อผู้ใช้
+        if user and check_password_hash(user.password, password):  # ตรวจสอบรหัสผ่าน
+            return user  # ถ้าผู้ใช้และรหัสผ่านตรงกัน ให้คืนค่า user
+        return None  # ถ้าไม่ตรงกันให้คืนค่า None
+    
     @users_bp.route('/protected', methods=['GET'])
     def protected():
         token = request.headers.get('Authorization')  # รับ token จาก headers
@@ -180,7 +188,7 @@ def create_users_bp():
 
         # รับข้อมูลจากคำขอ
         username = data.get('username')
-     #   email = data.get('email')
+        email = data.get('email')
         password = data.get('password')
         gender = data.get('gender')
         age = data.get('age')
@@ -210,7 +218,7 @@ def create_users_bp():
         # สร้างผู้ใช้ใหม่
         new_user = User(
             username=username,
-        #    email=email,
+            email=email,
             password=hashed_password,
             gender=gender,
             age=age,
@@ -250,23 +258,23 @@ def create_users_bp():
         except Exception as e:
             return jsonify({"message": "เกิดข้อผิดพลาด", "error": str(e)}), 500
 
-    # @users_bp.route('/check-email', methods=['POST'])
-    # def check_email():
-    #     try:
-    #         data = request.get_json()
-    #         email = data.get('email')
+    @users_bp.route('/check-email', methods=['POST'])
+    def check_email():
+        try:
+            data = request.get_json()
+            email = data.get('email')
 
-    #         if not email:
-    #             return jsonify({"message": "กรุณาส่ง email"}), 400
+            if not email:
+                return jsonify({"message": "กรุณาส่ง email"}), 400
 
-    #         user = User.query.filter_by(email=email).first()
-    #         if user:
-    #             return jsonify({"available": False, "message": "อีเมลนี้ถูกใช้ไปแล้ว"}), 409
+            user = User.query.filter_by(email=email).first()
+            if user:
+                return jsonify({"available": False, "message": "อีเมลนี้ถูกใช้ไปแล้ว"}), 409
 
-    #         return jsonify({"available": True, "message": "สามารถใช้ได้"}), 200
+            return jsonify({"available": True, "message": "สามารถใช้ได้"}), 200
 
-    #     except Exception as e:
-    #         return jsonify({"message": "เกิดข้อผิดพลาด", "error": str(e)}), 500
+        except Exception as e:
+            return jsonify({"message": "เกิดข้อผิดพลาด", "error": str(e)}), 500
 
 
 

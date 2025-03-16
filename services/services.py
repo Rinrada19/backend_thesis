@@ -40,3 +40,23 @@ def check_user_login(username, password):
             return user
     return None
 
+def blacklist_token(user, jti):
+    # ตรวจสอบว่า user.blacklisted_jti เป็นลิสต์หรือไม่
+    if not isinstance(user.blacklisted_jti, list):
+        user.blacklisted_jti = []  # ถ้าไม่เป็นลิสต์ให้กำหนดเป็นลิสต์ว่าง
+    
+    # เพิ่ม jti ใน blacklisted_jti
+    user.blacklisted_jti.append(jti)
+
+def is_token_valid(decoded_token, user):
+    jti = decoded_token.get('jti')
+    
+    # ตรวจสอบว่า user.blacklisted_jti เป็น None หรือไม่
+    if user.blacklisted_jti is None:
+        user.blacklisted_jti = []  # ถ้าเป็น None ให้กำหนดให้เป็นลิสต์ว่าง
+    
+    # ตรวจสอบว่า jti อยู่ใน blacklisted_jti หรือไม่
+    if jti in user.blacklisted_jti:
+        return False
+    return True
+

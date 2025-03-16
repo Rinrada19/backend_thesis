@@ -8,14 +8,14 @@ class User(db.Model):
 
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
-   # email = db.Column(db.String(120), unique=True, nullable=False)
+    email = db.Column(db.String(255), unique=True, nullable=False, server_default='default@example.com')
     gender = db.Column(db.String(20), nullable=True)
     age = db.Column(db.Integer, nullable=True)
     height = db.Column(db.Float, nullable=True)
     weight = db.Column(db.Float, nullable=True)
     dietary_restriction = db.Column(db.ARRAY(db.String), default=[])  # เปลี่ยนเป็น ARRAY
     congenital_disease = db.Column(db.ARRAY(db.String), default=[])  # เปลี่ยนเป็น ARRAY
-    
+    blacklisted_jti = db.Column(db.String(36), nullable=True)  # เก็บ JTI ที่ถูกยกเลิก
     physical_activity = db.Column(db.String(50), nullable=True)
     goal = db.Column(db.String(100), nullable=True)
     require_weight = db.Column(db.Float, nullable=True)
